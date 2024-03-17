@@ -8,3 +8,8 @@ cd part1
 npm install
 npm run dev
 ```
+
+## Arrancar un servidor.
+```
+npm run server
+```
