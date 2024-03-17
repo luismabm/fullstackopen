@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import phonebook from './service/phonebook'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -29,6 +30,19 @@ const App = () => {
       setNewNumber('')
     })
   }
+
+  const removePerson = (person) => {
+    const response = window.confirm(`Want to delete ${person.name}?`)
+    if(response) {
+        phonebook.remove(person.id)
+            .then(response => {
+                setPersons(persons.filter(p => p.id !== person.id))
+            })
+    } else {
+        return
+    }
+  }
+  
   const handleNameChange = (event) => {
     event.preventDefault()
     setNewName(event.target.value)
@@ -47,20 +61,20 @@ const App = () => {
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
 
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+      <Persons persons={persons} removePerson={removePerson} />
     </div>
   )
 }
 
-const PersonForm = (props) => {
+const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumberChange}) => {
   return (
     <div>
-      <form onSubmit={props.addPerson}>
+      <form onSubmit={addPerson}>
         <div>
-          name: <input value={props.newName} onChange={props.handleNameChange} />
+          name: <input value={newName} onChange={handleNameChange} />
         </div>
         <div>
-          number: <input value={props.newNumber} onChange={props.handleNumberChange} />
+          number: <input value={newNumber} onChange={handleNumberChange} />
         </div>
         <div>
           <button type="submit">add</button>
@@ -70,22 +84,6 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = ({persons}) => {
-  return (
-    <div>
-      {persons.map((person)=>
-        <Person key={person.name} person={person} />
-      )}
-    </div>
-  )
-}
-const Person = ({person}) => {
-  return (
-    <div>
-      {person.name} {person.number}
-    </div>
-  )
-}
 
 const Filter = () => {
   return 
