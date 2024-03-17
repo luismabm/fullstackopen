@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import phonebook from './service/phonebook'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -7,10 +7,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
 
   useEffect(() => {
-    axios
-    .get('http://localhost:3001/persons')
-    .then(response => {
-      setPersons(response.data)
+    phonebook.getAll().then(persons => {
+      setPersons(persons)
     })
   }, [])
 
@@ -25,10 +23,8 @@ const App = () => {
       number: newNumber
     }
 
-    axios
-    .post('http://localhost:3001/persons', personObject)
-    .then(response => {
-      setPersons(persons.concat(response.data))
+    phonebook.create(personObject).then(person => {
+      setPersons(persons.concat(person))
       setNewName('')
       setNewNumber('')
     })
