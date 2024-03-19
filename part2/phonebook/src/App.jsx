@@ -47,11 +47,15 @@ const App = () => {
       const changedPerson = { ...person, number: newNumber}
         phonebook.update(person.id, changedPerson)
             .then(response => {
-                 // Add Alert
-                 setNotification({message: `Updated ${response.name}`})
-                 setTimeout(() => setNotification(null), 3000) 
+                setNotification({message: `Updated ${response.name}`})
+                setTimeout(() => setNotification(null), 3000) 
            
                 setPersons(persons.map(p => p.id !== person.id ? p : response))
+            })
+            .catch(error => {
+                setNotification({message: `Information of ${person.name} has already been removed from server`, type: 'error'})
+                setTimeout(() => setNotification(null), 3000) 
+                setPersons(persons.filter(p => p.id !== person.id))
             })
     } else {
         return
