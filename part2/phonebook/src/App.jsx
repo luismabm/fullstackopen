@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react'
 import phonebook from './service/phonebook'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     phonebook.getAll().then(persons => {
@@ -26,10 +31,14 @@ const App = () => {
     }
 
     phonebook.create(personObject).then(person => {
+      setNotification({message: `Added ${newName}`})
+      setTimeout(() => setNotification(null), 3000) 
+
       setPersons(persons.concat(person))
-      setNewName('')
-      setNewNumber('')
-    })
+        setNewName('')
+        setNewNumber('')
+      }
+    ) 
   }
 
   const updatePerson = ({person, newNumber}) => {
@@ -38,6 +47,10 @@ const App = () => {
       const changedPerson = { ...person, number: newNumber}
         phonebook.update(person.id, changedPerson)
             .then(response => {
+                 // Add Alert
+                 setNotification({message: `Updated ${response.name}`})
+                 setTimeout(() => setNotification(null), 3000) 
+           
                 setPersons(persons.map(p => p.id !== person.id ? p : response))
             })
     } else {
@@ -57,6 +70,15 @@ const App = () => {
     }
   }
   
+  const handleFilterPersons = (event) => {
+    event.preventDefault()
+    const filter = event.target.value
+    phonebook.filterPersons(filter).then(persons => {
+      setPersons(persons)
+    })
+    setFilter(filter)
+  }
+
   const handleNameChange = (event) => {
     event.preventDefault()
     setNewName(event.target.value)
@@ -69,7 +91,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter />
+      <Notification notification={notification} />
+      <Filter filter={filter} handleFilter={handleFilterPersons} />
 
       <h3>Add a new</h3>
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
@@ -80,27 +103,5 @@ const App = () => {
   )
 }
 
-const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumberChange}) => {
-  return (
-    <div>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-    </div>
-  )
-}
-
-
-const Filter = () => {
-  return 
-}
 
 export default App

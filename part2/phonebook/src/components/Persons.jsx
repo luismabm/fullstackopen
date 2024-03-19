@@ -1,6 +1,10 @@
 import phonebook from '../service/phonebook'
 
 const Persons = ({persons, removePerson}) => {
+    if(persons === null){
+      return
+    }
+
     return (
       <div>
         {persons.map((person)=>

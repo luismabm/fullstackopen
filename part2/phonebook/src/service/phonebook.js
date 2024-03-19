@@ -6,6 +6,14 @@ const getAll = () => {
     return request.then(response => response.data)
 }
 
+const filterPersons = (filter) => {
+    const request = axios.get(baseUrl)
+    return request.then(response => {
+        const persons = response.data
+        return persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+    })
+}
+
 const create = newObject => {
     const request = axios.post(baseUrl, newObject)
     return request.then(response => response.data)
@@ -21,4 +29,4 @@ const remove = id => {
     return request.then(response => response.data)
 }
 
-export default { getAll, create, update, remove }
+export default { getAll, filterPersons, create, update, remove }
